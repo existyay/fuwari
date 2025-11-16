@@ -196,8 +196,27 @@
   },
   "active": "08d9ab643ad55983",
   "lastOpenFiles": [
-    "src/content/posts/测试.md",
-    "pnpm-lock.yaml.1334093182",
-    "_tmp_54064_0737ed893b62b110755fa76823dfcfe2"
+    "dist/sitemap-0.xml",
+    "dist/sitemap-index.xml",
+    "dist/_routes.json",
+    "dist/_astro/_page_.FSEBZdKv.css",
+    "dist/_astro/_page_.B08li1OA.css",
+    "dist/_astro/roboto-vietnamese-700-normal.iKxYNAzq.woff2",
+    "dist/_astro/roboto-vietnamese-700-normal.BhieYfot.woff",
+    "dist/_astro/roboto-vietnamese-500-normal.CUzdRVXb.woff",
+    "dist/_astro/roboto-vietnamese-500-normal.HYpufUYk.woff2",
+    "dist/_astro/roboto-vietnamese-400-normal.CDDxGrUb.woff2",
+    "dist/_astro/roboto-vietnamese-400-normal.BYP5tVVv.woff",
+    "dist/_astro/demo-banner.WD4SMgz_.png",
+    "dist/_astro/demo-avatar.CxcI0ivM_1nbuVe.webp",
+    "dist/favicon/favicon-light-32.png",
+    "dist/favicon/favicon-light-192.png",
+    "dist/favicon/favicon-light-180.png",
+    "dist/favicon/favicon-light-128.png",
+    "dist/favicon/favicon-dark-32.png",
+    "dist/favicon/favicon-dark-192.png",
+    "dist/favicon/favicon-dark-180.png",
+    "dist/favicon/favicon-dark-128.png",
+    "src/content/posts/测试.md"
   ]
 }
