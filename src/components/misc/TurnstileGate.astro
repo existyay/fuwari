@@ -9,11 +9,14 @@ interface Props {
 const { appearance = "interaction-only", action = "pageview" } =
 	Astro.props satisfies Props;
 
+const rawSiteKey = TURNSTILE_SITE_KEY ?? "";
+const siteKey = rawSiteKey.trim();
 const verifyEndpoint = "/api/turnstile/verify";
 const storageKey = "fuwari:turnstile:verified";
 const scriptSrc = "https://challenges.cloudflare.com/turnstile/v0/api.js";
 const scriptId = "fuwari-turnstile-script";
 const networkRetryLimit = 3;
+const hasSiteKey = siteKey.length > 0;
 ---
 
 <div
@@ -31,21 +34,28 @@ const networkRetryLimit = 3;
 		<p class="turnstile-gate__description">
 			为了防止机器人滥用，本站会在首次访问时请求 Cloudflare Turnstile 验证。
 		</p>
-		<div
-			class="cf-turnstile"
-			data-sitekey={TURNSTILE_SITE_KEY}
-			data-mode="managed"
-			data-appearance={appearance}
-			data-response-field="false"
-			data-preload="auto"
-			data-callback="onFuwariTurnstileSuccess"
-			data-error-callback="onFuwariTurnstileError"
-			data-timeout-callback="onFuwariTurnstileTimeout"
-			data-before-interactive-callback="onFuwariBeforeInteractive"
-			data-after-interactive-callback="onFuwariAfterInteractive"
-			data-unsupported-callback="onFuwariTurnstileUnsupported"
-			data-action={action}
-		></div>
+		{hasSiteKey ? (
+			<div
+				class="cf-turnstile"
+				data-sitekey={siteKey}
+				data-mode="managed"
+				data-appearance={appearance}
+				data-response-field="false"
+				data-preload="auto"
+				data-callback="onFuwariTurnstileSuccess"
+				data-error-callback="onFuwariTurnstileError"
+				data-timeout-callback="onFuwariTurnstileTimeout"
+				data-before-interactive-callback="onFuwariBeforeInteractive"
+				data-after-interactive-callback="onFuwariAfterInteractive"
+				data-unsupported-callback="onFuwariTurnstileUnsupported"
+				data-action={action}
+			></div>
+		) : (
+			<div class="turnstile-gate__config-hint" role="status">
+				<p>尚未配置 Turnstile sitekey，无法进行安全验证。</p>
+				<p>请确认环境变量 <code>TURNSTILE_SITE_KEY</code> 与 Cloudflare 仪表盘中的站点 key 保持一致。</p>
+			</div>
+		)}
 		<p class="turnstile-gate__status" data-status-text>正在加载验证...</p>
 		<button type="button" class="turnstile-gate__retry" data-retry-button>
 			重新加载验证
@@ -103,6 +113,17 @@ const networkRetryLimit = 3;
 	color: var(--muted-foreground, #666);
 }
 
+.turnstile-gate__config-hint {
+	margin-top: 1rem;
+	padding: 0.75rem;
+	border-radius: 0.75rem;
+	background: color-mix(in srgb, var(--panel-bg, #f5f5f5) 70%, transparent);
+	border: 1px dashed color-mix(in srgb, var(--border-color, #d5d5d5) 60%, transparent);
+	font-size: 0.95rem;
+	line-height: 1.5;
+	text-align: left;
+}
+
 .turnstile-gate[data-state="error"] .turnstile-gate__status,
 .turnstile-gate[data-state="timeout"] .turnstile-gate__status {
 	color: #c2410c;
@@ -155,6 +176,13 @@ const networkRetryLimit = 3;
 		setState('passed');
 		setTimeout(() => overlay.remove(), 220);
 	};
+
+	if (!widgetEl || !widgetEl.dataset?.sitekey) {
+		console.error('[Turnstile] Missing sitekey configuration.');
+		setState('error', '站点未正确配置 Turnstile sitekey，无法完成验证');
+		retryBtn?.setAttribute('hidden', 'true');
+		return;
+	}
 
 	const loadScript = () => {
 		if (window.turnstile) {
