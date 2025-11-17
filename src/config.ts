@@ -6,7 +6,6 @@ import type {
 	SiteConfig,
 } from "./types/config";
 import { LinkPreset } from "./types/config";
-
 export const siteConfig: SiteConfig = {
 	title: "小白の博客",
 	subtitle: "☁",
