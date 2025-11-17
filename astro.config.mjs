@@ -32,10 +32,6 @@ export default defineConfig({
 	site: "https://fuwari.vercel.app/",
 	base: "/",
 	trailingSlash: "always",
-	env: {
-		TURNSTILE_SITE_KEY: process.env.TURNSTILE_SITE_KEY,
-		TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY,
-	},
 	integrations: [
 		astroTurnstile(),
 		tailwind({
