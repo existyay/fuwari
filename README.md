@@ -49,6 +49,23 @@ A static blog template built with [Astro](https://astro.build).
 4. Run `pnpm new-post <filename>` to create a new post and edit it in `src/content/posts/`.
 5. Deploy your blog to Vercel, Netlify, GitHub Pages, etc. following [the guides](https://docs.astro.build/en/guides/deploy/). You need to edit the site configuration in `astro.config.mjs` before deployment.
 
+## 🔐 Cloudflare Turnstile
+
+Fuwari 内置 [astro-turnstile](https://github.com/hkbertoson/astro-turnstile)，访客一打开站点就会触发 Cloudflare Turnstile 人机验证。我们提供的轻量级遮罩组件（`src/components/misc/TurnstileGate.astro`）采用 managed widget + interaction-only 模式，保证普通访客几乎无感，只有可疑流量才会看到完整挑战。
+
+1. 在 [Cloudflare Turnstile 控制台](https://developers.cloudflare.com/turnstile/get-started/#1-create-your-widget) 创建站点，记录 `Site Key` 和 `Secret Key`。
+2. 在根目录 `.env`（或通过部署平台）设置：
+    ```bash
+    TURNSTILE_SITE_KEY=你的站点 key
+    TURNSTILE_SECRET_KEY=你的密钥
+    ```
+3. `astro.config.mjs` 已预置 `astro-turnstile` 集成，并在 `/api/turnstile/verify` 暴露校验接口；客户端使用 Cloudflare 官方脚本（`https://challenges.cloudflare.com/turnstile/v0/api.js`）以 `data-mode="managed" + data-appearance="interaction-only"` 配置自动托管 widget 并通过 `fetch` 将 token 发送到服务器校验。
+4. 如果你需要自定义行为（例如只在特定页面启用、人机验证通过后执行额外逻辑），可以调整 `TurnstileGate.astro` 中的回调或直接使用 `astro-turnstile:components/TurnstileWidget` 在局部页面嵌入自定义表单。
+
+参考资料：
+- [saicaca/fuwari README](https://github.com/saicaca/fuwari/tree/main) 描述了主题整体结构与配置项。
+- [hkbertoson/astro-turnstile README](https://github.com/hkbertoson/astro-turnstile) 详细说明了可用组件、Dev Toolbar 以及环境变量要求。
+
 ## 📝 Frontmatter of Posts
 
 ```yaml

@@ -9,7 +9,6 @@ import { defineConfig } from "astro/config";
 import expressiveCode from "astro-expressive-code";
 import icon from "astro-icon";
 import astroTurnstile from "astro-turnstile";
-import turnstile from "astro-turnstile";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeComponents from "rehype-components"; /* Render the custom directive content */
 import rehypeKatex from "rehype-katex";
@@ -33,7 +32,10 @@ export default defineConfig({
 	base: "/",
 	trailingSlash: "always",
 	integrations: [
-		astroTurnstile(),
+		astroTurnstile({
+			endpointPath: "/api/turnstile/verify",
+			disableClientScript: true,
+		}),
 		tailwind({
 			nesting: true,
 		}),
@@ -106,7 +108,6 @@ export default defineConfig({
 		}),
 		svelte(),
 		sitemap(),
-		turnstile(),
 	],
 
 	markdown: {

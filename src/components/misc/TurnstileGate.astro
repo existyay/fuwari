@@ -1,0 +1,284 @@
+---
+import { TURNSTILE_SITE_KEY } from "astro:env/client";
+
+interface Props {
+	appearance?: "always" | "execute" | "interaction-only";
+	action?: string;
+}
+
+const { appearance = "interaction-only", action = "pageview" } =
+	Astro.props satisfies Props;
+
+const verifyEndpoint = "/api/turnstile/verify";
+const storageKey = "fuwari:turnstile:verified";
+const scriptSrc = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+const scriptId = "fuwari-turnstile-script";
+const networkRetryLimit = 3;
+---
+
+<div
+	class="turnstile-gate"
+	data-turnstile-gate
+	data-state="pending"
+	data-endpoint={verifyEndpoint}
+	data-storage-key={storageKey}
+	data-script-src={scriptSrc}
+	data-script-id={scriptId}
+	data-retry-limit={networkRetryLimit}
+>
+	<div class="turnstile-gate__panel" role="alertdialog" aria-modal="true" aria-live="polite">
+		<h2 class="turnstile-gate__title">安全验证</h2>
+		<p class="turnstile-gate__description">
+			为了防止机器人滥用，本站会在首次访问时请求 Cloudflare Turnstile 验证。
+		</p>
+		<div
+			class="cf-turnstile"
+			data-sitekey={TURNSTILE_SITE_KEY}
+			data-mode="managed"
+			data-appearance={appearance}
+			data-response-field="false"
+			data-preload="auto"
+			data-callback="onFuwariTurnstileSuccess"
+			data-error-callback="onFuwariTurnstileError"
+			data-timeout-callback="onFuwariTurnstileTimeout"
+			data-before-interactive-callback="onFuwariBeforeInteractive"
+			data-after-interactive-callback="onFuwariAfterInteractive"
+			data-unsupported-callback="onFuwariTurnstileUnsupported"
+			data-action={action}
+		></div>
+		<p class="turnstile-gate__status" data-status-text>正在加载验证...</p>
+		<button type="button" class="turnstile-gate__retry" data-retry-button>
+			重新加载验证
+		</button>
+	</div>
+</div>
+
+<style scoped>
+.turnstile-gate {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: color-mix(in oklch, var(--page-bg) 70%, black);
+	backdrop-filter: blur(10px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2rem;
+	z-index: 9999;
+	transition: opacity 200ms ease;
+}
+
+.turnstile-gate[data-state="passed"] {
+	opacity: 0;
+	pointer-events: none;
+}
+
+.turnstile-gate__panel {
+	max-width: 24rem;
+	width: 100%;
+	border-radius: 1rem;
+	background: var(--panel-bg, color-mix(in srgb, #fff 85%, #000 15%));
+	padding: 1.5rem;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+	text-align: center;
+	border: 1px solid color-mix(in srgb, var(--border-color, #d5d5d5) 70%, transparent);
+}
+
+.turnstile-gate__title {
+	font-size: 1.25rem;
+	margin-bottom: 0.75rem;
+}
+
+.turnstile-gate__description {
+	margin-bottom: 1rem;
+	color: var(--muted-foreground, #666);
+	line-height: 1.5;
+}
+
+.turnstile-gate__status {
+	margin-top: 0.75rem;
+	font-size: 0.95rem;
+	color: var(--muted-foreground, #666);
+}
+
+.turnstile-gate[data-state="error"] .turnstile-gate__status,
+.turnstile-gate[data-state="timeout"] .turnstile-gate__status {
+	color: #c2410c;
+}
+
+.turnstile-gate__retry {
+	margin-top: 0.75rem;
+	padding: 0.5rem 1rem;
+	border-radius: 999px;
+	border: none;
+	font-weight: 600;
+	background: var(--primary, oklch(0.72 0.15 var(--hue)));
+	color: #fff;
+	cursor: pointer;
+	transition: opacity 150ms ease;
+	display: none;
+}
+
+.turnstile-gate[data-state="error"] .turnstile-gate__retry {
+	display: inline-flex;
+	justify-content: center;
+}
+</style>
+
+<script is:inline>
+(() => {
+	const overlay = document.querySelector('[data-turnstile-gate]');
+	if (!overlay) return;
+
+	const statusEl = overlay.querySelector('[data-status-text]');
+	const retryBtn = overlay.querySelector('[data-retry-button]');
+	const widgetEl = overlay.querySelector('.cf-turnstile');
+	const endpoint = overlay.dataset.endpoint ?? '/api/turnstile/verify';
+	const storageKey = overlay.dataset.storageKey ?? 'fuwari:turnstile:verified';
+	const scriptSrc = overlay.dataset.scriptSrc ?? 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+	const scriptId = overlay.dataset.scriptId ?? 'fuwari-turnstile-script';
+	const retryLimit = Number(overlay.dataset.retryLimit ?? '3');
+
+	let scriptPromise = null;
+	let retryCount = 0;
+
+	const setState = (state, message) => {
+		overlay.setAttribute('data-state', state);
+		if (message && statusEl) {
+			statusEl.textContent = message;
+		}
+	};
+
+	const closeOverlay = () => {
+		setState('passed');
+		setTimeout(() => overlay.remove(), 220);
+	};
+
+	const loadScript = () => {
+		if (window.turnstile) {
+			return Promise.resolve();
+		}
+
+		if (scriptPromise) {
+			return scriptPromise;
+		}
+
+		const existing = document.getElementById(scriptId);
+		if (existing) {
+			scriptPromise = new Promise((resolve, reject) => {
+				existing.addEventListener('load', () => {
+					scriptPromise = null;
+					resolve();
+				}, { once: true });
+				existing.addEventListener('error', (error) => {
+					scriptPromise = null;
+					reject(error);
+				}, { once: true });
+			});
+			return scriptPromise;
+		}
+
+		scriptPromise = new Promise((resolve, reject) => {
+			const script = document.createElement('script');
+			script.id = scriptId;
+			script.src = scriptSrc;
+			script.async = true;
+			script.defer = true;
+			script.onload = () => {
+				scriptPromise = null;
+				resolve();
+			};
+			script.onerror = (error) => {
+				scriptPromise = null;
+				reject(error);
+			};
+			document.head.appendChild(script);
+		});
+
+		return scriptPromise;
+	};
+
+	const ensureTurnstile = async () => {
+		try {
+			await loadScript();
+		} catch (error) {
+			console.error('[Turnstile] script load error', error);
+			setState('error', 'Turnstile 脚本加载失败，请检查网络或稍后重试');
+		}
+	};
+
+	const scheduleRetry = (code) => {
+		if (retryCount >= retryLimit) {
+			setState('error', `多次重试后仍然失败${code ? `（${code}）` : ''}，请刷新页面或联系站长`);
+			return;
+		}
+
+		retryCount += 1;
+		const delay = 2000 * retryCount;
+		setState('timeout', `网络异常${code ? `（${code}）` : ''}，${Math.ceil(delay / 1000)} 秒后重试...`);
+		setTimeout(() => {
+			ensureTurnstile().then(() => window.turnstile?.reset?.(widgetEl ?? undefined));
+		}, delay);
+	};
+
+	if (sessionStorage.getItem(storageKey) === '1') {
+		closeOverlay();
+		return;
+	}
+
+	retryBtn?.addEventListener('click', () => {
+		setState('pending', '重新加载验证...');
+		ensureTurnstile().then(() => window.turnstile?.reset?.(widgetEl ?? undefined));
+	});
+
+	ensureTurnstile();
+
+	window.onFuwariTurnstileSuccess = async (token) => {
+		setState('verifying', '正在确认令牌...');
+		try {
+			const formData = new FormData();
+			formData.append('cf-turnstile-response', token);
+			const response = await fetch(endpoint, {
+				method: 'POST',
+				body: formData,
+			});
+
+			if (!response.ok) {
+				throw new Error('Verification failed');
+			}
+
+			sessionStorage.setItem(storageKey, '1');
+			setState('passed', '验证完成');
+			closeOverlay();
+		} catch (error) {
+			console.error('[Turnstile] verify token failed', error);
+			setState('error', '验证失败，请稍后再试');
+			window.turnstile?.reset?.();
+		}
+	};
+
+	window.onFuwariTurnstileError = (errorCode) => {
+		setState('error', `Turnstile 加载失败${errorCode ? `（${errorCode}）` : ''}，请检查网络`);
+		scheduleRetry(errorCode);
+	};
+
+	window.onFuwariTurnstileTimeout = () => {
+		setState('timeout', '验证超时，正在重新加载');
+		window.turnstile?.reset?.();
+	};
+
+	window.onFuwariTurnstileUnsupported = () => {
+		setState('error', '当前浏览器不支持 Turnstile，请更换或升级浏览器');
+	};
+
+	window.onFuwariBeforeInteractive = () => {
+		setState('interactive', '检测到可疑流量，需要您完成互动验证');
+	};
+
+	window.onFuwariAfterInteractive = () => {
+		setState('pending', '正在提交验证结果...');
+	};
+})();
+</script>
