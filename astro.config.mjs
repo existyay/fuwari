@@ -33,8 +33,9 @@ export default defineConfig({
 	trailingSlash: "always",
 	integrations: [
 		astroTurnstile({
-			endpointPath: "/api/turnstile/verify",
+			endpointPath: "/api/turnstile/auto-verify",
 			disableClientScript: true,
+			disableDevToolbar: true,
 		}),
 		tailwind({
 			nesting: true,

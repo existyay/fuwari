@@ -271,10 +271,21 @@ const hasSiteKey = siteKey.length > 0;
 			const response = await fetch(endpoint, {
 				method: 'POST',
 				body: formData,
+				headers: {
+					accept: 'application/json',
+				},
 			});
 
-			if (!response.ok) {
-				throw new Error('Verification failed');
+			const result = await response
+				.json()
+				.catch(() => ({ success: response.ok }));
+
+			if (!response.ok || !result?.success) {
+				const errorCodes = Array.isArray(result?.errors)
+					? `（${result.errors.join(', ')}）`
+					: '';
+				const reason = result?.message ?? response.statusText ?? '验证失败';
+				throw new Error(`${reason}${errorCodes}`);
 			}
 
 			sessionStorage.setItem(storageKey, '1');
@@ -282,7 +293,7 @@ const hasSiteKey = siteKey.length > 0;
 			closeOverlay();
 		} catch (error) {
 			console.error('[Turnstile] verify token failed', error);
-			setState('error', '验证失败，请稍后再试');
+			setState('error', error instanceof Error ? error.message : '验证失败，请稍后再试');
 			window.turnstile?.reset?.();
 		}
 	};
