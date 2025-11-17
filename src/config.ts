@@ -31,16 +31,16 @@ export const siteConfig: SiteConfig = {
 	},
 	favicon: [
 		// Leave this array empty to use the default favicon
-		// {
-		//   src: '/favicon/icon.png',    // Path of the favicon, relative to the /public directory
-		//   theme: 'light',              // (Optional) Either 'light' or 'dark', set only if you have different favicons for light and dark mode
-		//   sizes: '32x32',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
-		// }
 		{
-			src: "https://q2.qlogo.cn/headimg_dl?dst_uin=2973517380&spec=5", // Path of the favicon, relative to the /public directory
+			src: "/favicon/icon.png", // Path of the favicon, relative to the /public directory
 			//theme: 'light',              // (Optional) Either 'light' or 'dark', set only if you have different favicons for light and dark mode
-			sizes: "128x128", // (Optional) Size of the favicon, set only if you have favicons of different sizes
+			sizes: "32x32", // (Optional) Size of the favicon, set only if you have favicons of different sizes
 		},
+		// {
+		// 	src: "https://q2.qlogo.cn/headimg_dl?dst_uin=2973517380&spec=5", // Path of the favicon, relative to the /public directory
+		// 	//theme: 'light',              // (Optional) Either 'light' or 'dark', set only if you have different favicons for light and dark mode
+		// 	sizes: "128x128", // (Optional) Size of the favicon, set only if you have favicons of different sizes
+		// },
 	],
 };
 
@@ -64,15 +64,15 @@ export const profileConfig: ProfileConfig = {
 	links: [
 		{
 			name: "Twitter",
-			icon: "fa6-brands:twitter", // Visit https://icones.js.org/ for icon codes
+			icon: "fa6-brands:x-twitter", // Visit https://icones.js.org/ for icon codes
 			// You will need to install the corresponding icon set if it's not already included
 			// `pnpm add @iconify-json/<icon-set-name>`
-			url: "https://twitter.com",
+			url: "https://x.com/world79815035",
 		},
 		{
 			name: "Steam",
 			icon: "fa6-brands:steam",
-			url: "https://store.steampowered.com",
+			url: "https://steamcommunity.com/profiles/76561198284856340/",
 		},
 		{
 			name: "GitHub",
