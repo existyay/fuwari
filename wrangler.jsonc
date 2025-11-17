@@ -1,6 +1,6 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "xiaobai-fuwari",
+	"name": "xiaobai",
 	// 更新为今天的日期
 	"compatibility_date": "2025-11-16",
 	"assets": {
