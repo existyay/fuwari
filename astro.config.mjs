@@ -33,10 +33,8 @@ export default defineConfig({
 	base: "/",
 	trailingSlash: "always",
 	env: {
-		schema: {
-			TURNSTILE_SITE_KEY: "0x4AAAAAAB8Ky8pq8D6KLabf",
-			TURNSTILE_SECRET_KEY: "0x4AAAAAAB8Ky4_5EkvDfAQV6a_MIJ4afqk",
-		},
+		TURNSTILE_SITE_KEY: process.env.TURNSTILE_SITE_KEY,
+		TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY,
 	},
 	integrations: [
 		astroTurnstile(),
