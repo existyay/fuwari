@@ -32,7 +32,12 @@ export default defineConfig({
 	site: "https://fuwari.vercel.app/",
 	base: "/",
 	trailingSlash: "always",
-
+	env: {
+		schema: {
+			TURNSTILE_SITE_KEY: "0x4AAAAAAB8Ky8pq8D6KLabf",
+			TURNSTILE_SECRET_KEY: "0x4AAAAAAB8Ky4_5EkvDfAQV6a_MIJ4afqk",
+		},
+	},
 	integrations: [
 		astroTurnstile(),
 		tailwind({
