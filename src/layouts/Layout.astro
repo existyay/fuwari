@@ -101,6 +101,14 @@ const bannerOffset =
 
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
+		
+		<!-- DNS 预连接优化 -->
+		<link rel="dns-prefetch" href="https://challenges.cloudflare.com" />
+		<link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin />
+		
+		<!-- 预加载关键字体 -->
+		<link rel="preload" as="style" href="https://fonts.googleapis.com" />
+		
 		{favicons.map(favicon => (
 			<link rel="icon"
 				  href={favicon.src.startsWith('/') ? url(favicon.src) : favicon.src}

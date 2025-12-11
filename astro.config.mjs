@@ -162,6 +162,10 @@ export default defineConfig({
 			external: ["node:path"],
 		},
 		build: {
+			// 启用 CSS 代码分割以减少初始加载
+			cssCodeSplit: true,
+			// 压缩设置
+			minify: "esbuild",
 			rollupOptions: {
 				onwarn(warning, warn) {
 					// temporarily suppress this warning
@@ -173,8 +177,32 @@ export default defineConfig({
 					}
 					warn(warning);
 				},
+				output: {
+					// 优化分块策略
+					manualChunks: {
+						"vendor-katex": ["katex"],
+						"vendor-photoswipe": ["photoswipe"],
+					},
+				},
 			},
 		},
+	},
+
+	// 图片优化配置
+	image: {
+		// 使用 Sharp 进行图片优化
+		service: {
+			entrypoint: "astro/assets/services/sharp",
+			config: {
+				limitInputPixels: false,
+			},
+		},
+	},
+
+	// 预取配置 - 提高导航速度
+	prefetch: {
+		prefetchAll: false,
+		defaultStrategy: "viewport",
 	},
 
 	adapter: cloudflare(),

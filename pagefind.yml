@@ -1,6 +1,15 @@
+site: dist
 exclude_selectors:
   - "span.katex"
   - "span.katex-display"
   - "[data-pagefind-ignore]"
   - ".search-panel"
   - "#search-panel"
+  - "nav"
+  - "footer"
+  - ".sidebar"
+  
+# 性能优化
+glob: "**/*.html"
+bundle_dir: pagefind
+keep_index_url: false
