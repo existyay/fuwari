@@ -116,7 +116,15 @@ export default defineConfig({
 			parseDirectiveNode,
 		],
 		rehypePlugins: [
-			[rehypeKatex, { strict: "ignore", output: "html" }],
+			[
+				rehypeKatex,
+				{
+					strict: (_errorCode) => "ignore",
+					output: "html",
+					trust: true,
+					throwOnError: false,
+				},
+			],
 			rehypeSlug,
 			[
 				rehypeComponents,
