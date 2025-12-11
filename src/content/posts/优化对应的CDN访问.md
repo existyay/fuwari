@@ -3,8 +3,8 @@ title: 优化对应的CDN访问
 published: 2025-11-16
 description: ''
 image: ''
-tags: []
-category: ''
+tags: [Foo, Bar]
+category: '技术'
 draft: false 
 lang: 'zh-CN'
 ---
