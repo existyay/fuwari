@@ -18,7 +18,7 @@ lang: 'zh-cn'
 
 注意你的windows版本
 
-原版的windows没有关闭自动更新，没有精简，没有任何其他操作且是windows10 1809以上可以使用自带的**powershell5+**管理员模式输入
+原版的windows没有关闭自动更新，没有精简，没有任何其他操作且是windows10 1809以上可以使用自带的**powershell5+** 管理员模式输入
 
 ~~~bash
 Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
