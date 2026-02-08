@@ -12,7 +12,7 @@ lang: 'zh-cn'
 
 # 安装所需的软件
 
-## Step1:Winget or chocolatey
+## Step1 Winget or chocolatey
 
 **winget**(安装详情参考https://learn.microsoft.com/zh-cn/windows/package-manager/winget/)
 
@@ -60,7 +60,7 @@ winget install --id Microsoft.PowerShell --source winget
 >
 > **chocolatey使用node在安装过程中安装并勾选即可，最简单最快捷，并且附带python环境，自动设置对应的环境变量和目录**
 
-## Step2:window terminal
+## Step2 Window terminal
 
 安装window terminal也是切记有证书先安装证书链接为
 
@@ -108,7 +108,7 @@ winget install --id Microsoft.WindowsTerminal -e
 >
 > 注意null没有双引号
 
-## Step3:oh-my-posh安装
+## Step3 Oh-my-posh安装
 
 打开**WindowsTerminal**敲入以下命令安装**oh-my-posh**
 
@@ -160,7 +160,7 @@ notepad $PROFILE
 oh-my-posh init pwsh | Invoke-Expression
 ~~~
 
-## Step4:Profile For Theme
+## Step4 Profile For Theme
 
 Profile的配置方式有多种
 
@@ -198,7 +198,7 @@ Profile的配置方式有多种
 oh-my-posh init pwsh --config 'C:\Program Files\WindowsApps\ohmyposh.cli_29.2.0.0_x64__xxxxxxxxxx\themes\peru.omp.json' | Invoke-Expression
 ~~~
 
-## Step4:If update
+## Step4 If update
 
 ~~~bash
 winget upgrade JanDeDobbeleer.OhMyPosh --source winget
@@ -210,4 +210,4 @@ winget upgrade JanDeDobbeleer.OhMyPosh --source winget
 Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://ohmyposh.dev/install.ps1'))
 ~~~
 
-## Step5:Finish Enjoy :)
+## Step5 Finish Enjoy :)
